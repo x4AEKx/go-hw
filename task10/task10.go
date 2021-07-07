@@ -13,7 +13,7 @@ func group(numbers ...float32) map[int][]float32 {
 }
 
 func Start() {
-	myGroup := group(32.5, -25.4, -27.0, 13.0, 19.0, 15.5, 24.5, -21.0)
+	myGroup := group(32.5, -25.4, -27.0, 13.0, 19.0, 15.5, 24.5, -21.0, -5, 5)
 
 	fmt.Println(myGroup)
 }

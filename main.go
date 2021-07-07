@@ -1,11 +1,9 @@
 package main
 
-import (
-	"go-hw/task1"
-)
+import "go-hw/task35"
 
 func main() {
-	task1.Start()
+	// task1.Start()
 	// task2.Start()
 	// task3.Start()
 	// task3_1.Start()
@@ -41,4 +39,5 @@ func main() {
 	// task32.Start()
 	// task33.Start()
 	// task34.Start()
+	task35.Start()
 }

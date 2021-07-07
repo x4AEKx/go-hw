@@ -24,7 +24,7 @@ func isUniq(str string) bool {
 }
 
 func Start() {
-	str := "dad"
+	str := "cat"
 
 	value := isUniq(str)
 
