@@ -1,82 +1,53 @@
 package task36
 
-import (
-	"fmt"
-	"sync"
-)
+import "fmt"
 
 // Дан массив из 10 строк, посчитать в каждой строке количество уникальных символов с помощью горутин.
 
-type set struct {
-	m  map[string]bool
-	mu *sync.RWMutex
-	wg *sync.WaitGroup
-}
-
-func NewSet(mu *sync.RWMutex, wg *sync.WaitGroup) *set {
-	return &set{
-		m:  make(map[string]bool),
-		mu: mu,
-		wg: wg,
+func sliceToStr(arr [10]string, c chan string) {
+	for _, v := range arr {
+		c <- v
 	}
+	close(c)
 }
 
-func (s *set) Add(str string) {
-	s.mu.RLock()
-	_, ok := s.m[str]
-	s.mu.RUnlock()
-	if ok {
-		s.mu.Lock()
-		s.m[str] = false
-		s.mu.Unlock()
-	} else {
-		s.mu.Lock()
-		s.m[str] = true
-		s.mu.Unlock()
-	}
-	s.wg.Done()
-}
+func uniq(req <-chan string, res chan<- int) {
 
-func (s *set) countUniq() int {
-	count := 0
+	for str := range req {
+		m := make(map[rune]bool)
+		count := 0
 
-	for _, v := range s.m {
-		if v {
-			count++
+		for _, v := range str {
+			_, ok := m[v]
+			if ok {
+				m[v] = false
+			} else {
+				m[v] = true
+			}
 		}
+
+		for _, value := range m {
+			if value {
+				count++
+			}
+		}
+
+		res <- count
 	}
-
-	return count
-}
-
-func (s *set) String() string {
-	s.mu.RLock()
-	defer s.mu.RUnlock()
-
-	return fmt.Sprintf("%v", s.m)
-}
-
-func uniqCount(str string) int {
-	mu := sync.RWMutex{}
-	wg := sync.WaitGroup{}
-
-	set := NewSet(&mu, &wg)
-
-	for _, letter := range str {
-		wg.Add(1)
-		go set.Add(string(letter))
-	}
-
-	wg.Wait()
-
-	return set.countUniq()
+	close(res)
 }
 
 func Start() {
 	arr := [10]string{"мам", "dad", "cat", "dog", "tree", "cda", "aaa", "cda", "adf", "afg"}
 	// должно быть = 1, 1, 3, 3, 2, 3, 0, 3, 3, 3
 
-	for _, v := range arr {
-		go fmt.Println(uniqCount(v))
+	channel := make(chan string)
+	result := make(chan int)
+
+	go sliceToStr(arr, channel)
+	go uniq(channel, result)
+
+	for v := range result {
+		fmt.Println(v)
 	}
 }
