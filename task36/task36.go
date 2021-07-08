@@ -4,14 +4,14 @@ import "fmt"
 
 // Дан массив из 10 строк, посчитать в каждой строке количество уникальных символов с помощью горутин.
 
-func sliceToStr(arr [10]string, c chan string) {
+func arrToStr(arr [10]string, c chan string) {
 	for _, v := range arr {
 		c <- v
 	}
 	close(c)
 }
 
-func uniq(req <-chan string, res chan<- int) {
+func uniqCount(req <-chan string, res chan<- int) {
 
 	for str := range req {
 		m := make(map[rune]bool)
@@ -41,13 +41,13 @@ func Start() {
 	arr := [10]string{"мам", "dad", "cat", "dog", "tree", "cda", "aaa", "cda", "adf", "afg"}
 	// должно быть = 1, 1, 3, 3, 2, 3, 0, 3, 3, 3
 
-	channel := make(chan string)
-	result := make(chan int)
+	strings := make(chan string)
+	count := make(chan int)
 
-	go sliceToStr(arr, channel)
-	go uniq(channel, result)
+	go arrToStr(arr, strings)
+	go uniqCount(strings, count)
 
-	for v := range result {
+	for v := range count {
 		fmt.Println(v)
 	}
 }
